@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafeGuard Emergency — Map</title>
+
+  <!-- Font Awesome (icons) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* ======= Your original safeGuard theme + navbar (kept intact) ======= */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+    .glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.6);
+    }
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+    }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: bold; color: #ff4444; }
+    .nav-menu { display: flex; gap: 2rem; transition: all 0.3s ease; }
+    .nav-link { color: #ccc; text-decoration: none; padding: 0.5rem 1rem; border-radius: 5px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
+    .nav-link:hover, .nav-link.active { color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+    .hamburger { display: none; flex-direction: column; cursor: pointer; padding: 0.5rem; z-index: 1001; }
+    .hamburger span { width: 25px; height: 3px; background: #fff; margin: 3px 0; transition: all 0.3s ease; }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); background: #ff4444; }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); background: #ff4444; }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-menu {
+        position: fixed;
+        top: 80px;
+        right: -100%;
+        width: 300px;
+        height: calc(100vh - 80px);
+        background: rgba(26, 26, 26, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 2rem;
+        gap: 1rem;
+        border-left: 3px solid #ff4444;
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+        z-index: 999;
+      }
+      .nav-menu.active { right: 0; }
+      .nav-link { padding: 1rem 1.5rem; border-radius: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
+      .nav-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      .nav-backdrop.active { opacity: 1; visibility: visible; }
+    }
+    .mobile-menu-close { position: absolute; top: 1rem; right: 1rem; background: rgba(255, 68, 68, 0.1); border: none; color: #ff4444; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .mobile-emergency-btn { margin-top: auto; padding: 1rem; background: linear-gradient(135deg, #ff4444, #cc0000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+
+    /* ======= Map page styles (kept in same theme) ======= */
+    .map-container { padding-top: 100px; min-height: 100vh; max-width: 1200px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+    .page-title { font-size: 2.2rem; text-align: center; margin-bottom: 18px; color: #ff8800; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .map-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .search-wrap { display:flex; gap:8px; align-items:center; width:100%; max-width:760px; margin: 0 auto 10px; }
+    .search-input {
+      flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.45); color:#fff; outline:none;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .search-btn {
+      padding:10px 14px; border-radius:10px; border:none; background:#0ff; color:#000; font-weight:700;
+      cursor:pointer;
+    }
+    .filter-btn { padding: 0.6rem 1rem; border-radius:20px; background: rgba(255,255,255,0.04); color:#fff; border:1px solid rgba(255,255,255,0.03); cursor:pointer; transition:0.18s; }
+    .filter-btn.active, .filter-btn:hover { background: rgba(255,136,0,0.26); border-color:#ff8800; color:#fff; transform:translateY(-3px); }
+    .map-display { position: relative; height: 600px; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+    #leafletMap { width:100%; height:100%; }
+    .map-legend {
+      position: absolute; top: 18px; right: 18px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 10px; backdrop-filter: blur(6px); z-index: 1100; font-size: 0.9rem;
+    }
+    .legend-item { display:flex; align-items:center; gap:10px; margin:6px 0; }
+    .legend-color { width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.85); }
+
+    /* marker icon color classes for leaflet divIcon */
+    .leaflet-marker-icon .marker-hospital { color:#00cc44; font-size:20px; }
+    .leaflet-marker-icon .marker-fire { color:#ff8800; font-size:20px; }
+    .leaflet-marker-icon .marker-police { color:#0088ff; font-size:20px; }
+    .leaflet-marker-icon .marker-shelter { color:#8844ff; font-size:20px; }
+    .leaflet-marker-icon .marker-user { color:#ff4444; font-size:20px; }
+
+    @media (max-width: 768px) {
+      .page-title { font-size: 1.6rem; margin-bottom: 12px; }
+      .map-display { height: 420px; }
+      .search-wrap { max-width: 100%; padding: 0 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar (exact original visual style preserved) -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>SafeGuard Emergency</span>
+      </div>
+
+      <div class="nav-menu" id="navMenu">
+        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="alerts.html" class="nav-link"><i class="fas fa-bell"></i> <span>Alerts</span></a>
+        <a href="map.html" class="nav-link active"><i class="fas fa-map-marked-alt"></i> <span>Map</span></a>
+        <a href="sos.html" class="nav-link"><i class="fas fa-exclamation-triangle"></i> <span>SOS</span></a>
+        <a href="contacts.html" class="nav-link"><i class="fas fa-phone"></i> <span>Contacts</span></a>
+        <a href="safety.html" class="nav-link"><i class="fas fa-shield-check"></i> <span>Safety</span></a>
+      </div>
+
+      <div class="hamburger" id="hamburgerBtn" aria-label="Open menu" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Map content -->
+  <main class="map-container container">
+    <h1 class="page-title"><i class="fas fa-map-marked-alt"></i> Emergency Services Map</h1>
+
+    <!-- search + filters -->
+    <div class="search-wrap" aria-hidden="false">
+      <input id="searchInput" class="search-input" placeholder="Search city / area (e.g., Salem, Chennai) — press Enter or click Search" />
+      <button id="searchBtn" class="search-btn" aria-label="Search location"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="map-controls" role="group" aria-label="Map filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="safe">Safe Zones</button>
+      <button class="filter-btn" data-filter="warning">Warning Zones</button>
+      <button class="filter-btn" data-filter="critical">Critical Zones</button>
+      <button class="filter-btn" data-filter="hospital">Hospitals</button>
+      <button class="filter-btn" data-filter="fire">Fire Stations</button>
+      <button class="filter-btn" data-filter="police">Police</button>
+      <button class="filter-btn" data-filter="shelter">Shelters</button>
+    </div>
+
+    <div class="map-display glass" role="region" aria-label="Interactive emergency map">
+      <div id="leafletMap" aria-hidden="false"></div>
+
+      <div class="map-legend" aria-hidden="false">
+        <div class="legend-item"><div class="legend-color" style="background:#00cc44"></div>Safe Zone</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffcc00"></div>Warning Zone</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ff4444"></div>Critical Zone</div>
+        <div style="height:6px"></div>
+        <div class="legend-item"><div class="legend-color" style="background:#00cc44"></div>Hospital</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ff8800"></div>Fire</div>
+        <div class="legend-item"><div class="legend-color" style="background:#0088ff"></div>Police</div>
+        <div class="legend-item"><div class="legend-color" style="background:#8844ff"></div>Shelter</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    /***** NAV MENU (preserve original behavior) *****/
+    (function(){
+      const hamburger = document.getElementById('hamburgerBtn');
+      const navMenu = document.getElementById('navMenu');
+      const body = document.body;
+
+      // create backdrop for mobile
+      const backdrop = document.createElement('div');
+      backdrop.className = 'nav-backdrop';
+      document.body.appendChild(backdrop);
+
+      // close button inside menu
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'mobile-menu-close';
+      closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+
+      // emergency quick button for mobile
+      const emergencyBtn = document.createElement('a');
+      emergencyBtn.href = 'sos.html';
+      emergencyBtn.className = 'mobile-emergency-btn';
+      emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+
+      if (navMenu) {
+        navMenu.insertBefore(closeBtn, navMenu.firstChild);
+        navMenu.appendChild(emergencyBtn);
+      }
+
+      function openMenu(){
+        hamburger.classList.add('active');
+        navMenu.classList.add('active');
+        backdrop.classList.add('active');
+        body.style.overflow = 'hidden';
+      }
+      function closeMenu(){
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        backdrop.classList.remove('active');
+        body.style.overflow = '';
+      }
+
+      hamburger.addEventListener('click', ()=> {
+        if (navMenu.classList.contains('active')) closeMenu();
+        else openMenu();
+      });
+      closeBtn.addEventListener('click', closeMenu);
+      backdrop.addEventListener('click', closeMenu);
+
+      // allow keyboard toggle
+      hamburger.addEventListener('keydown', (e)=> { if(e.key === 'Enter') hamburger.click(); });
+    })();
+
+    /***** MAP INITIALIZATION (Leaflet) *****/
+    const map = L.map('leafletMap', { zoomControl: true }).setView([11.6643, 78.1460], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // groups for easy filtering
+    const groupSafe = L.layerGroup().addTo(map);
+    const groupWarning = L.layerGroup().addTo(map);
+    const groupCritical = L.layerGroup().addTo(map);
+    const groupHospital = L.layerGroup().addTo(map);
+    const groupFire = L.layerGroup().addTo(map);
+    const groupPolice = L.layerGroup().addTo(map);
+    const groupShelter = L.layerGroup().addTo(map);
+
+    // === sample zones (polygons/circles) ===
+    const zoneSafe = L.circle([11.6643, 78.1460], { radius: 700, color: '#00cc44', fillColor: '#00cc44', fillOpacity: 0.12 }).bindPopup('<b>Safe Zone</b><br>Govt Shelter');
+    const zoneWarning = L.circle([11.6743, 78.1560], { radius: 500, color: '#ffcc00', fillColor: '#ffcc00', fillOpacity: 0.12 }).bindPopup('<b>Warning Zone</b><br>Flood-prone area');
+    const zoneCritical = L.circle([11.6500, 78.1300], { radius: 450, color: '#ff4444', fillColor: '#ff4444', fillOpacity: 0.16 }).bindPopup('<b>Critical Zone</b><br>Landslide risk');
+
+    zoneSafe.addTo(groupSafe);
+    zoneWarning.addTo(groupWarning);
+    zoneCritical.addTo(groupCritical);
+
+    // === sample services (markers) ===
+    const services = [
+      { id:1, name:'Salem Government Hospital', type:'hospital', coords:[11.6643,78.1460], phone:'0427-2444444' },
+      { id:2, name:'Salem Fire Station', type:'fire', coords:[11.6701,78.1502], phone:'0427-2445555' },
+      { id:3, name:'Salem Police Station', type:'police', coords:[11.6598,78.1410], phone:'0427-2446666' },
+      { id:4, name:'Community Shelter', type:'shelter', coords:[11.6685,78.1555], phone:'0427-2447777' }
+    ];
+
+    // custom small divIcons so they look neon and consistent with your theme
+    function createDivIcon(html, className='') {
+      return L.divIcon({
+        html: html,
+        className: className + ' leaflet-custom-icon',
+        iconSize: [28,28],
+        iconAnchor: [14,28],
+      });
+    }
+
+    services.forEach(s => {
+      let iconHtml = '';
+      let layerGroup = null;
+      if (s.type === 'hospital') {
+        iconHtml = '<i class="fas fa-hospital marker-hospital"></i>';
+        layerGroup = groupHospital;
+      } else if (s.type === 'fire') {
+        iconHtml = '<i class="fas fa-fire-extinguisher marker-fire"></i>';
+        layerGroup = groupFire;
+      } else if (s.type === 'police') {
+        iconHtml = '<i class="fas fa-shield-alt marker-police"></i>';
+        layerGroup = groupPolice;
+      } else if (s.type === 'shelter') {
+        iconHtml = '<i class="fas fa-home marker-shelter"></i>';
+        layerGroup = groupShelter;
+      }
+
+      const marker = L.marker(s.coords, { icon: createDivIcon(iconHtml) })
+        .bindPopup(`<b>${s.name}</b><br>Type: ${s.type}<br><a href="tel:${s.phone}">Call: ${s.phone}</a>`);
+      marker.options.serviceType = s.type;
+      marker.addTo(layerGroup);
+    });
+
+    // add all groups to map initially
+    const allGroups = [groupSafe, groupWarning, groupCritical, groupHospital, groupFire, groupPolice, groupShelter];
+    allGroups.forEach(g => g.addTo(map));
+
+    // user location marker (if allowed) — styled as user marker
+    let userMarker = null;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        userMarker = L.marker([lat, lon], {
+          icon: createDivIcon('<i class="fas fa-location-arrow marker-user"></i>')
+        }).addTo(map).bindPopup('You are here');
+        // center map to user if in proximity
+        // map.setView([lat, lon], 13);
+      }, err => {
+        // permission denied or error — we keep default center
+      }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+
+    /***** FILTER BUTTONS (toggle groups) *****/
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => btn.addEventListener('click', () => {
+      // set active visual
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.getAttribute('data-filter');
+
+      // first remove all groups from map
+      allGroups.forEach(g => map.removeLayer(g));
+      // then add only the selected groups
+      if (filter === 'all') {
+        allGroups.forEach(g => map.addLayer(g));
+      } else if (filter === 'safe') {
+        map.addLayer(groupSafe);
+      } else if (filter === 'warning') {
+        map.addLayer(groupWarning);
+      } else if (filter === 'critical') {
+        map.addLayer(groupCritical);
+      } else if (filter === 'hospital') {
+        map.addLayer(groupHospital);
+      } else if (filter === 'fire') {
+        map.addLayer(groupFire);
+      } else if (filter === 'police') {
+        map.addLayer(groupPolice);
+      } else if (filter === 'shelter') {
+        map.addLayer(groupShelter);
+      }
+    }));
+
+    /***** SEARCH (Nominatim) *****/
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+
+    async function doSearch(query) {
+      if (!query) return;
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+      try {
+        searchBtn.disabled = true;
+        const res = await fetch(url, { headers: { 'Accept-Language': 'en' }});
+        const results = await res.json();
+        if (!results || results.length === 0) {
+          alert('Location not found — try another query.');
+          return;
+        }
+        // take first result
+        const r = results[0];
+        const lat = parseFloat(r.lat);
+        const lon = parseFloat(r.lon);
+        map.setView([lat, lon], 14);
+
+        // add temporary marker & popup
+        const temp = L.marker([lat, lon], { icon: createDivIcon('<i class="fas fa-map-marker-alt marker-user"></i>') }).addTo(map);
+        temp.bindPopup(`<b>${r.display_name}</b>`).openPopup();
+        // remove after 7s
+        setTimeout(()=> { map.removeLayer(temp); }, 7000);
+
+        // optionally show nearby zones/markers: open popups within radius (5000m)
+        // open popups of markers/groups near that point
+        const nearbyRadius = 5000;
+        allGroups.forEach(group => {
+          group.eachLayer(layer => {
+            if (layer.getLatLng) {
+              const d = map.distance([lat, lon], layer.getLatLng());
+              if (d <= nearbyRadius) {
+                if (layer.openPopup) layer.openPopup();
+              } else {
+                if (layer.closePopup) layer.closePopup();
+              }
+            } else if (layer.getBounds) {
+              // for circles / polygons check center distance
+              const center = layer.getLatLng ? layer.getLatLng() : layer.getBounds().getCenter();
+              const d = map.distance([lat, lon], center);
+              if (d <= nearbyRadius) {
+                if (layer.openPopup) layer.openPopup();
+              } else {
+                if (layer.closePopup) layer.closePopup();
+              }
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert('Search failed — check your internet connection.');
+      } finally {
+        searchBtn.disabled = false;
+      }
+    }
+
+    searchBtn.addEventListener('click', () => doSearch(searchInput.value));
+    searchInput.addEventListener('keydown', (e)=> {
+      if (e.key === 'Enter') doSearch(searchInput.value);
+    });
+
+    /***** small UX polish: show pointer cursor on clickable map controls *****/
+    map.getContainer().style.cursor = 'grab';
+
+    // optional: show scale
+    L.control.scale().addTo(map);
+
+    /***** fit map view to show all initial layers nicely *****/
+    const groupAllBounds = L.featureGroup([...groupSafe.getLayers(), ...groupWarning.getLayers(), ...groupCritical.getLayers(), ...groupHospital.getLayers(), ...groupFire.getLayers(), ...groupPolice.getLayers(), ...groupShelter.getLayers()]);
+    if (groupAllBounds.getLayers().length) {
+      map.fitBounds(groupAllBounds.getBounds().pad(0.25));
+    }
+  </script>
+</body>
+</html>

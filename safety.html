@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Tips - SafeGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #ff4444;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #ff4444;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 300px;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                border-left: 3px solid #ff4444;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .nav-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-emergency-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        /* Safety Page Styles */
+        .safety-container {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .disaster-selector {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .disaster-selector h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ff8800;
+        }
+
+        .disaster-tabs {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .disaster-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .disaster-tab:hover,
+        .disaster-tab.active {
+            border-color: #ff8800;
+            background: rgba(255, 136, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .disaster-tab i {
+            font-size: 2rem;
+        }
+
+        .safety-content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .safety-tips {
+            display: none;
+        }
+
+        .safety-tips.active {
+            display: block;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .tips-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .tips-header h2 {
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .severity-indicator {
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+        }
+
+        .severity-indicator.critical {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+        }
+
+        .severity-indicator.high {
+            background: rgba(255, 136, 0, 0.2);
+            border: 1px solid #ff8800;
+            color: #ff8800;
+        }
+
+        .severity-indicator.medium {
+            background: rgba(255, 204, 0, 0.2);
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+        }
+
+        .safety-phases {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .phase-card {
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 4px solid #ff8800;
+        }
+
+        .phase-card.critical {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .phase-card h3 {
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .safety-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .safety-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 1rem 0;
+            color: #cccccc;
+            line-height: 1.6;
+        }
+
+        .safety-list i {
+            color: #00cc44;
+            margin-top: 2px;
+        }
+
+        .drop-cover-hold {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ff4444;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .step-content h4 {
+            color: #ff4444;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            color: #ff8800;
+            margin-top: 1rem;
+        }
+
+        /* Sidebar Styles */
+        .safety-sidebar > div {
+            margin-bottom: 2rem;
+        }
+
+        .safety-sidebar h3 {
+            margin-bottom: 1.5rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-reference {
+            padding: 1.5rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .quick-action:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .quick-action.emergency {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+        }
+
+        .quick-action.emergency:hover {
+            background: linear-gradient(135deg, #ff6666, #ff4444);
+        }
+
+        /* Emergency Kit Checklist */
+        .kit-checklist {
+            margin-bottom: 2rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 1rem 0;
+            cursor: pointer;
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        .kit-checkbox {
+            display: none;
+        }
+
+        .checkmark {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #666;
+            border-radius: 3px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .kit-checkbox:checked + .checkmark {
+            background: #00cc44;
+            border-color: #00cc44;
+        }
+
+        .kit-checkbox:checked + .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .kit-progress {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #ff8800, #ff4444);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            color: #cccccc;
+            font-weight: bold;
+        }
+
+        /* Safety Quiz */
+        .safety-quiz {
+            padding: 1.5rem;
+        }
+
+        .quiz-question {
+            margin-bottom: 2rem;
+        }
+
+        .quiz-question h4 {
+            margin-bottom: 1rem;
+            color: white;
+            line-height: 1.4;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quiz-option {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .quiz-option.correct {
+            background: rgba(0, 204, 68, 0.3);
+            border-color: #00cc44;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(255, 68, 68, 0.3);
+            border-color: #ff4444;
+        }
+
+        .quiz-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quiz-results {
+            text-align: center;
+        }
+
+        .quiz-results h4 {
+            color: #ff8800;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-score {
+            margin: 1rem 0;
+        }
+
+        .score-message {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .score-message.perfect {
+            color: #00cc44;
+        }
+
+        .score-message.good {
+            color: #ffcc00;
+        }
+
+        .score-message.needs-work {
+            color: #ff8800;
+        }
+
+        .restart-quiz {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 1rem auto 0;
+            transition: all 0.3s ease;
+        }
+
+        .restart-quiz:hover {
+            background: linear-gradient(135deg, #0099ff, #0077dd);
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated {
+            animation-fill-mode: both;
+        }
+
+        @media (max-width: 768px) {
+            .safety-content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .disaster-tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tips-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .drop-cover-hold {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .safety-container {
+                padding-top: 120px;
+            }
+            
+            .disaster-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .disaster-tab {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SafeGuard Emergency</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="alerts.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </a>
+                <a href="map.html" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map</span>
+                </a>
+                <a href="sos.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>SOS</span>
+                </a>
+                <a href="contacts.html" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="safety.html" class="nav-link active">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Safety</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="safety-container">
+        <div class="container">
+            <h1 class="page-title animated">
+                <i class="fas fa-shield-check"></i>
+                Emergency Safety Guide
+            </h1>
+            <p class="page-subtitle">Essential safety information for disaster preparedness and emergency response</p>
+
+            <!-- Disaster Type Selector -->
+            <div class="disaster-selector glass">
+                <h3>Select Disaster Type for Safety Tips</h3>
+                <div class="disaster-tabs">
+                    <button class="disaster-tab active" data-disaster="earthquake">
+                        <i class="fas fa-house-crack"></i>
+                        <span>Earthquake</span>
+                    </button>
+                    <button class="disaster-tab" data-disaster="flood">
+                        <i class="fas fa-water"></i>
+                        <span>Flood</span>
+                    </button>
+                    <button class="disaster-tab" data-disaster="fire">
+                        <i class="fas fa-fire"></i>
+                        <span>Fire</span>
+                    </button>
+                    <button class="disaster-tab" data-disaster="storm">
+                        <i class="fas fa-bolt"></i>
+                        <span>Storm</span>
+                    </button>
+                    <button class="disaster-tab" data-disaster="general">
+                        <i class="fas fa-list-check"></i>
+                        <span>General</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Safety Content Grid -->
+            <div class="safety-content-grid">
+                <!-- Main Safety Tips -->
+                <div class="safety-tips-main">
+                    <!-- Earthquake Tips -->
+                    <div class="safety-tips earthquake active" data-disaster="earthquake">
+                        <div class="tips-header">
+                            <h2><i class="fas fa-house-crack"></i> Earthquake Safety</h2>
+                            <div class="severity-indicator high">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                High Priority Skills
+                            </div>
+                        </div>
+                        
+                        <div class="safety-phases">
+                            <div class="phase-card glass critical">
+                                <h3><i class="fas fa-exclamation-triangle"></i> During Earthquake - DROP, COVER, HOLD ON</h3>
+                                <div class="drop-cover-hold">
+                                    <div class="action-step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h4>DROP</h4>
+                                            <p>Drop to hands and knees immediately</p>
+                                        </div>
+                                        <div class="step-icon">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </div>
+                                    </div>
+                                    <div class="action-step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h4>COVER</h4>
+                                            <p>Take cover under sturdy desk or table</p>
+                                        </div>
+                                        <div class="step-icon">
+                                            <i class="fas fa-shield"></i>
+                                        </div>
+                                    </div>
+                                    <div class="action-step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h4>HOLD ON</h4>
+                                            <p>Hold on and protect your head and neck</p>
+                                        </div>
+                                        <div class="step-icon">
+                                            <i class="fas fa-hands"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="phase-card glass">
+                                <h3><i class="fas fa-clock"></i> Before Earthquake</h3>
+                                <ul class="safety-list">
+                                    <li><i class="fas fa-check"></i> Secure heavy furniture and appliances to walls</li>
+                                    <li><i class="fas fa-check"></i> Identify safe spots in each room (under sturdy tables)</li>
+                                    <li><i class="fas fa-check"></i> Keep emergency kit accessible</li>
+                                    <li><i class="fas fa-check"></i> Practice "Drop, Cover, Hold On" with family</li>
+                                    <li><i class="fas fa-check"></i> Know how to turn off gas, water, and electricity</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="phase-card glass">
+                                <h3><i class="fas fa-first-aid"></i> After Earthquake</h3>
+                                <ul class="safety-list">
+                                    <li><i class="fas fa-check"></i> Check for injuries and provide first aid</li>
+                                    <li><i class="fas fa-check"></i> Check for gas leaks, electrical damage</li>
+                                    <li><i class="fas fa-check"></i> Listen to emergency broadcasts</li>
+                                    <li><i class="fas fa-check"></i> Be prepared for aftershocks</li>
+                                    <li><i class="fas fa-check"></i> Use phone only for emergencies</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other disaster tips would go here (flood, fire, storm) -->
+                    <div class="safety-tips flood" data-disaster="flood">
+                        <div class="tips-header">
+                            <h2><i class="fas fa-water"></i> Flood Safety</h2>
+                            <div class="severity-indicator medium">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Water Safety Critical
+                            </div>
+                        </div>
+                        
+                        <div class="safety-phases">
+                            <div class="phase-card glass critical">
+                                <h3><i class="fas fa-water"></i> Remember: "Turn Around, Don't Drown!"</h3>
+                                <ul class="safety-list">
+                                    <li><i class="fas fa-ban"></i> 6 inches of moving water can knock you down</li>
+                                    <li><i class="fas fa-car"></i> 12 inches can carry away a vehicle</li>
+                                    <li><i class="fas fa-exclamation-triangle"></i> NEVER drive through flooded roads</li>
+                                    <li><i class="fas fa-arrow-up"></i> Move to higher ground immediately when advised</li>
+                                    <li><i class="fas fa-route"></i> Follow designated evacuation routes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="safety-tips fire" data-disaster="fire">
+                        <div class="tips-header">
+                            <h2><i class="fas fa-fire"></i> Fire Safety</h2>
+                            <div class="severity-indicator critical">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Time Critical - Seconds Count
+                            </div>
+                        </div>
+                        
+                        <div class="safety-phases">
+                            <div class="phase-card glass critical">
+                                <h3><i class="fas fa-running"></i> Fire Evacuation: Stay Low, Get Out Fast!</h3>
+                                <ul class="safety-list">
+                                    <li><i class="fas fa-arrow-down"></i> Smoke rises - breathable air is near the floor</li>
+                                    <li><i class="fas fa-hand-paper"></i> Test doors with back of hand before opening</li>
+                                    <li><i class="fas fa-stairs"></i> Use stairs, NEVER elevators</li>
+                                    <li><i class="fas fa-door-closed"></i> Close doors behind you to slow fire spread</li>
+                                    <li><i class="fas fa-meeting-point"></i> Go to designated meeting point</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="safety-tips storm" data-disaster="storm">
+                        <div class="tips-header">
+                            <h2><i class="fas fa-bolt"></i> Storm Safety</h2>
+                            <div class="severity-indicator high">
+                                <i class="fas fa-wind"></i>
+                                Lightning & Wind Hazards
+                            </div>
+                        </div>
+                        
+                        <div class="safety-phases">
+                            <div class="phase-card glass critical">
+                                <h3><i class="fas fa-bolt"></i> Lightning Safety: 30-30 Rule</h3>
+                                <ul class="safety-list">
+                                    <li><i class="fas fa-home"></i> Seek shelter if thunder follows lightning by 30 seconds or less</li>
+                                    <li><i class="fas fa-clock"></i> Wait 30 minutes after last thunder before going outside</li>
+                                    <li><i class="fas fa-window-close"></i> Stay away from windows and glass doors</li>
+                                    <li><i class="fas fa-plug"></i> Avoid using electrical appliances</li>
+                                    <li><i class="fas fa-phone-slash"></i> Don't use landline phones except for emergencies</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="safety-tips general" data-disaster="general">
+                        <div class="tips-header">
+                            <h2><i class="fas fa-list-check"></i> Emergency Preparedness</h2>
+                            <div class="severity-indicator medium">
+                                <i class="fas fa-clock"></i>
+                                Always Be Ready
+                            </div>
+                        </div>
+                        
+                        <div class="safety-phases">
+                            <div class="phase-card glass">
+                                <h3><i class="fas fa-box"></i> Emergency Kit Essentials</h3>
+                                <div class="kit-checklist">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Water (1 gallon per person per day for 3 days)
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Non-perishable food (3-day supply)
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Battery-powered radio
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Flashlight and extra batteries
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        First aid kit
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Whistle for signaling help
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Cell phone chargers/power banks
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" class="kit-checkbox">
+                                        <span class="checkmark"></span>
+                                        Cash and important documents
+                                    </label>
+                                </div>
+                                <div class="kit-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="kitProgress" style="width: 0%"></div>
+                                    </div>
+                                    <span class="progress-text">0% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Sidebar -->
+                <div class="safety-sidebar">
+                    <!-- Quick Reference Card -->
+                    <div class="quick-reference glass">
+                        <h3><i class="fas fa-tachometer-alt"></i> Quick Reference</h3>
+                        <div class="quick-actions">
+                            <a href="sos.html" class="quick-action emergency">
+                                <i class="fas fa-phone"></i>
+                                <span>Emergency SOS</span>
+                            </a>
+                            <button class="quick-action" onclick="quickCall('112', 'Emergency Services')">
+                                <i class="fas fa-shield-halved"></i>
+                                <span>Call 112</span>
+                            </button>
+                            <a href="map.html" class="quick-action">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <span>Find Shelter</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Safety Quiz -->
+                    <div class="safety-quiz glass">
+                        <h3><i class="fas fa-question-circle"></i> Safety Quiz</h3>
+                        <div class="quiz-question active" id="question1">
+                            <h4>What should you do first during an earthquake?</h4>
+                            <div class="quiz-options">
+                                <button class="quiz-option" onclick="selectAnswer(this, false)">Run outside immediately</button>
+                                <button class="quiz-option" onclick="selectAnswer(this, true)">Drop to hands and knees</button>
+                                <button class="quiz-option" onclick="selectAnswer(this, false)">Stand in a doorway</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-question" id="question2" style="display: none;">
+                            <h4>How much water should you store per person per day?</h4>
+                            <div class="quiz-options">
+                                <button class="quiz-option" onclick="selectAnswer(this, false)">1/2 gallon</button>
+                                <button class="quiz-option" onclick="selectAnswer(this, true)">1 gallon</button>
+                                <button class="quiz-option" onclick="selectAnswer(this, false)">2 gallons</button>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-results" id="quizResults" style="display: none;">
+                            <h4>Quiz Complete!</h4>
+                            <div class="quiz-score">
+                                <span id="scoreDisplay">Score: 0/2</span>
+                                <div class="score-message" id="scoreMessage"></div>
+                            </div>
+                            <button class="restart-quiz" onclick="restartQuiz()">
+                                <i class="fas fa-redo"></i> Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let score = 0;
+        let totalQuestions = 2;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initDisasterTabs();
+            initKitProgress();
+            initQuiz();
+        });
+
+        function initNavigation() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+            
+            const backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            body.appendChild(backdrop);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-menu-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const emergencyBtn = document.createElement('a');
+            emergencyBtn.href = 'sos.html';
+            emergencyBtn.className = 'mobile-emergency-btn';
+            emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+            
+            if (hamburger && navMenu) {
+                navMenu.insertBefore(closeBtn, navMenu.firstChild);
+                navMenu.appendChild(emergencyBtn);
+                
+                hamburger.addEventListener('click', () => {
+                    if (hamburger.classList.contains('active')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                });
+                
+                closeBtn.addEventListener('click', closeMobileMenu);
+                backdrop.addEventListener('click', closeMobileMenu);
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            closeMobileMenu();
+                        }
+                    });
+                });
+            }
+            
+            function openMobileMenu() {
+                hamburger.classList.add('active');
+                navMenu.classList.add('active');
+                backdrop.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                backdrop.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+
+        function initDisasterTabs() {
+            const tabs = document.querySelectorAll('.disaster-tab');
+            const tips = document.querySelectorAll('.safety-tips');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const disaster = this.getAttribute('data-disaster');
+                    
+                    tips.forEach(tip => {
+                        if (tip.getAttribute('data-disaster') === disaster) {
+                            tip.style.display = 'block';
+                            tip.classList.add('active');
+                            tip.style.animation = 'slideInUp 0.5s ease';
+                        } else {
+                            tip.style.display = 'none';
+                            tip.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        }
+
+        function initKitProgress() {
+            const checkboxes = document.querySelectorAll('.kit-checkbox');
+            const progressBar = document.getElementById('kitProgress');
+            const progressText = document.querySelector('.progress-text');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+            
+            function updateProgress() {
+                const total = checkboxes.length;
+                const checked = document.querySelectorAll('.kit-checkbox:checked').length;
+                const percentage = (checked / total) * 100;
+                
+                if (progressBar) {
+                    progressBar.style.width = percentage + '%';
+                }
+                
+                if (progressText) {
+                    progressText.textContent = Math.round(percentage) + '% Complete';
+                }
+                
+                if (progressBar) {
+                    if (percentage === 100) {
+                        progressBar.style.background = 'linear-gradient(135deg, #00cc44, #008833)';
+                        showNotification('🎉 Emergency kit complete! You\'re well prepared!', 'success');
+                    } else if (percentage >= 75) {
+                        progressBar.style.background = 'linear-gradient(135deg, #ffcc00, #ff8800)';
+                    } else {
+                        progressBar.style.background = 'linear-gradient(135deg, #ff8800, #ff4444)';
+                    }
+                }
+            }
+        }
+
+        function selectAnswer(button, isCorrect) {
+            const options = button.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.disabled = true;
+                opt.classList.add('disabled');
+            });
+            
+            if (isCorrect) {
+                button.classList.add('correct');
+                score++;
+            } else {
+                button.classList.add('incorrect');
+                options.forEach(opt => {
+                    if (opt.onclick.toString().includes('true')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+
+        function nextQuestion() {
+            const currentQ = document.getElementById(`question${currentQuestion}`);
+            currentQ.style.display = 'none';
+            
+            currentQuestion++;
+            
+            if (currentQuestion <= totalQuestions) {
+                const nextQ = document.getElementById(`question${currentQuestion}`);
+                nextQ.style.display = 'block';
+                nextQ.style.animation = 'slideInRight 0.5s ease';
+            } else {
+                showQuizResults();
+            }
+        }
+
+        function showQuizResults() {
+            const results = document.getElementById('quizResults');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const scoreMessage = document.getElementById('scoreMessage');
+            
+            results.style.display = 'block';
+            results.style.animation = 'slideInUp 0.5s ease';
+            
+            scoreDisplay.textContent = `Score: ${score}/${totalQuestions}`;
+            
+            const percentage = (score / totalQuestions) * 100;
+            if (percentage === 100) {
+                scoreMessage.textContent = '🏆 Perfect! You know your safety basics!';
+                scoreMessage.className = 'score-message perfect';
+            } else if (percentage >= 50) {
+                scoreMessage.textContent = '👍 Good job! Review the tips to improve.';
+                scoreMessage.className = 'score-message good';
+            } else {
+                scoreMessage.textContent = '📚 Keep studying! Safety knowledge saves lives.';
+                scoreMessage.className = 'score-message needs-work';
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 1;
+            score = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const question = document.getElementById(`question${i}`);
+                const options = question.querySelectorAll('.quiz-option');
+                
+                options.forEach(opt => {
+                    opt.disabled = false;
+                    opt.className = 'quiz-option';
+                });
+                
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            document.getElementById('quizResults').style.display = 'none';
+        }
+
+        function initQuiz() {
+            restartQuiz();
+        }
+
+        function quickCall(number, service) {
+            if (confirm(`Call ${service} at ${number}?`)) {
+                window.location.href = `tel:${number}`;
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'linear-gradient(135deg, #00cc44, #008833)',
+                error: 'linear-gradient(135deg, #ff4444, #cc0000)',
+                warning: 'linear-gradient(135deg, #ff8800, #ff6600)',
+                info: 'linear-gradient(135deg, #0088ff, #0066cc)'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: ${colors[type] || colors.info}; color: white; padding: 1rem 1.5rem; border-radius: 10px; display: flex; align-items: center; gap: 10px; z-index: 3000; animation: slideInRight 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 350px;">
+                    <i class="fas fa-${icons[type] || icons.info}"></i>
+                    <span style="flex: 1; line-height: 1.4;">${message}</span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-left: 10px;">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

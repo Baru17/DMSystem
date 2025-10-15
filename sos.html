@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency SOS - SafeGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d1b1b 0%, #1a1a1a 50%, #2d1b1b 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #ff4444;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #ff4444;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 300px;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                border-left: 3px solid #ff4444;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .nav-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-emergency-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        /* SOS Page Styles */
+        .sos-container {
+            min-height: 100vh;
+            padding-top: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sos-content {
+            max-width: 600px;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .sos-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff4444;
+        }
+
+        .sos-subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 2rem;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 1rem;
+            margin: 2rem 0;
+            border-radius: 10px;
+        }
+
+        .location-coords {
+            font-size: 0.9rem;
+            color: #cccccc;
+            margin-top: 0.5rem;
+            text-align: center;
+            font-weight: 500;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        /* Emergency Types */
+        .emergency-types {
+            margin: 2rem 0;
+        }
+
+        .emergency-types h3 {
+            color: #ff8800;
+            margin-bottom: 1rem;
+        }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .type-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .type-btn:hover,
+        .type-btn.active {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .type-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* SOS Button */
+        .sos-button-container {
+            margin: 3rem 0;
+        }
+
+        .sos-button {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: none;
+            background: radial-gradient(circle, #ff4444 0%, #cc0000 70%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 50px rgba(255, 68, 68, 0.5);
+            animation: sospulse 2s infinite;
+        }
+
+        @keyframes sospulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+
+        .sos-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 70px rgba(255, 68, 68, 0.8);
+        }
+
+        .sos-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sos-inner i {
+            font-size: 3rem;
+        }
+
+        .sos-inner span {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .sos-inner .sos-subtitle {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .sos-instructions {
+            margin-top: 1rem;
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        /* Quick Message */
+        .quick-message {
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .quick-message h3 {
+            margin-bottom: 1rem;
+            color: #ff8800;
+        }
+
+        .quick-message textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .send-message-btn {
+            margin-top: 1rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .send-message-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 136, 255, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .emergency-modal {
+            text-align: center;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00cc44, #008833);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .emergency-timer {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 136, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #ff8800;
+        }
+
+        .timer-label {
+            color: #ff8800;
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .emergency-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #00cc44, #008833);
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 204, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 204, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 204, 68, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .type-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .sos-button {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .sos-inner span {
+                font-size: 1.5rem;
+            }
+            
+            .sos-inner i {
+                font-size: 2rem;
+            }
+            
+            .emergency-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sos-content {
+                padding: 1rem;
+            }
+            
+            .sos-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SafeGuard Emergency</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="alerts.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </a>
+                <a href="map.html" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map</span>
+                </a>
+                <a href="sos.html" class="nav-link active">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>SOS</span>
+                </a>
+                <a href="contacts.html" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="safety.html" class="nav-link">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Safety</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sos-container">
+        <div class="sos-content">
+            <h1 class="sos-title">Emergency Assistance</h1>
+            <p class="sos-subtitle">Press and hold the button below for immediate help</p>
+            
+            <!-- Location Status -->
+            <div class="location-status glass">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Location: <strong>Detecting...</strong></span>
+            </div>
+            <div class="location-coords">Getting your location...</div>
+
+            <!-- Emergency Type Selection -->
+            <div class="emergency-types">
+                <h3>Emergency Type</h3>
+                <div class="type-grid">
+                    <button class="type-btn active" data-type="medical">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Medical</span>
+                    </button>
+                    <button class="type-btn" data-type="fire">
+                        <i class="fas fa-fire"></i>
+                        <span>Fire</span>
+                    </button>
+                    <button class="type-btn" data-type="police">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>Police</span>
+                    </button>
+                    <button class="type-btn" data-type="disaster">
+                        <i class="fas fa-house-flood-water"></i>
+                        <span>Disaster</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main SOS Button -->
+            <div class="sos-button-container">
+                <button id="sosButton" class="sos-button">
+                    <div class="sos-inner">
+                        <i class="fas fa-phone"></i>
+                        <span>SOS</span>
+                        <div class="sos-subtitle">EMERGENCY</div>
+                    </div>
+                </button>
+                <div class="sos-instructions">Hold for 3 seconds to activate</div>
+            </div>
+
+            <!-- Quick Message -->
+            <div class="quick-message glass">
+                <h3>Quick Message</h3>
+                <textarea id="emergencyMessage" placeholder="Describe your emergency (optional)..."></textarea>
+                <button class="send-message-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Location & Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergencyModal" class="modal">
+        <div class="modal-content emergency-modal">
+            <div class="emergency-status">
+                <div class="status-icon">
+                    <i class="fas fa-satellite-dish"></i>
+                </div>
+                <h2>Emergency Signal Sent!</h2>
+                <p>Help is on the way. Stay calm and follow safety instructions.</p>
+                
+                <div class="emergency-timer">
+                    <div class="timer-label">Estimated Response Time</div>
+                    <div class="timer-display">
+                        <span id="responseTimer">05:30</span>
+                    </div>
+                </div>
+
+                <div class="emergency-actions">
+                    <button class="action-btn success" onclick="window.location.href='tel:911'">
+                        <i class="fas fa-phone"></i>
+                        Call Emergency Services
+                    </button>
+                    <button class="action-btn info" onclick="window.location.href='map.html'">
+                        <i class="fas fa-map"></i>
+                        View Nearby Help
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userLocationName = 'Location not available';
+        let userCoordinates = { lat: null, lng: null };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initSOSFunctionality();
+            getUserLocation();
+        });
+
+        function initNavigation() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+            
+            const backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            body.appendChild(backdrop);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-menu-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const emergencyBtn = document.createElement('a');
+            emergencyBtn.href = 'sos.html';
+            emergencyBtn.className = 'mobile-emergency-btn';
+            emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+            
+            if (hamburger && navMenu) {
+                navMenu.insertBefore(closeBtn, navMenu.firstChild);
+                navMenu.appendChild(emergencyBtn);
+                
+                hamburger.addEventListener('click', () => {
+                    if (hamburger.classList.contains('active')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                });
+                
+                closeBtn.addEventListener('click', closeMobileMenu);
+                backdrop.addEventListener('click', closeMobileMenu);
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            closeMobileMenu();
+                        }
+                    });
+                });
+            }
+            
+            function openMobileMenu() {
+                hamburger.classList.add('active');
+                navMenu.classList.add('active');
+                backdrop.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                backdrop.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+
+        function getUserLocation() {
+            const locationStatus = document.querySelector('.location-status');
+            const locationCoords = document.querySelector('.location-coords');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        userCoordinates.lat = position.coords.latitude;
+                        userCoordinates.lng = position.coords.longitude;
+                        
+                        const locationName = await getLocationName(userCoordinates.lat, userCoordinates.lng);
+                        userLocationName = locationName;
+                        
+                        locationStatus.innerHTML = `
+                            <i class="fas fa-map-marker-alt" style="color: #00cc44;"></i>
+                            <span>Location: <strong>Detected</strong></span>
+                        `;
+                        
+                        locationCoords.innerHTML = locationName;
+                        locationCoords.style.color = '#00cc44';
+                    },
+                    (error) => {
+                        handleLocationError();
+                    }
+                );
+            } else {
+                handleLocationError();
+            }
+        }
+
+        async function getLocationName(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return formatLocationName(data);
+                }
+            } catch (error) {
+                console.log('Location service error:', error);
+            }
+            
+            return getApproximateLocation(lat, lng);
+        }
+
+        function formatLocationName(data) {
+            const address = data.address || {};
+            const parts = [];
+            
+            if (address.road) {
+                parts.push(address.road);
+            }
+            if (address.neighbourhood || address.suburb) {
+                parts.push(address.neighbourhood || address.suburb);
+            }
+            if (address.city || address.town) {
+                parts.push(address.city || address.town);
+            }
+            if (address.state) {
+                parts.push(address.state);
+            }
+            
+            return parts.length > 0 ? parts.slice(0, 3).join(', ') : data.display_name || 'Location detected';
+        }
+
+        function getApproximateLocation(lat, lng) {
+            const cityRanges = [
+                { name: 'Salem, Tamil Nadu', lat: [11.6, 11.8], lng: [78.1, 78.3] },
+                { name: 'Chennai, Tamil Nadu', lat: [12.8, 13.2], lng: [80.1, 80.3] },
+                { name: 'Mumbai, Maharashtra', lat: [18.9, 19.3], lng: [72.8, 73.0] },
+                { name: 'Bengaluru, Karnataka', lat: [12.8, 13.1], lng: [77.5, 77.7] }
+            ];
+            
+            for (const city of cityRanges) {
+                if (lat >= city.lat[0] && lat <= city.lat[1] && 
+                    lng >= city.lng[0] && lng <= city.lng[1]) {
+                    return city.name;
+                }
+            }
+            
+            return `Salem District, Tamil Nadu`;
+        }
+
+        function handleLocationError() {
+            const locationStatus = document.querySelector('.location-status');
+            const locationCoords = document.querySelector('.location-coords');
+            
+            const demoLocations = [
+                'Salem Main Road, Tamil Nadu',
+                'Omalur Junction, Salem, TN',
+                'Cherry Road, Salem, Tamil Nadu',
+                'Fairlands, Salem District'
+            ];
+            
+            userLocationName = demoLocations[Math.floor(Math.random() * demoLocations.length)];
+            
+            locationStatus.innerHTML = `
+                <i class="fas fa-map-marker-alt" style="color: #ffcc00;"></i>
+                <span>Location : <strong>Salem</strong></span>
+            `;
+            
+            locationCoords.innerHTML = userLocationName;
+            locationCoords.style.color = '#ffcc00';
+        }
+
+        function initSOSFunctionality() {
+            const sosButton = document.getElementById('sosButton');
+            const emergencyModal = document.getElementById('emergencyModal');
+            const emergencyTypes = document.querySelectorAll('.type-btn');
+            const sendMessageBtn = document.querySelector('.send-message-btn');
+            
+            let selectedType = 'medical';
+            let sosTimer = null;
+            
+            // Emergency type selection
+            emergencyTypes.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    emergencyTypes.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedType = this.getAttribute('data-type');
+                });
+            });
+            
+            // SOS Button functionality
+            if (sosButton) {
+                sosButton.addEventListener('mousedown', startSOSTimer);
+                sosButton.addEventListener('mouseup', cancelSOSTimer);
+                sosButton.addEventListener('mouseleave', cancelSOSTimer);
+                sosButton.addEventListener('touchstart', startSOSTimer);
+                sosButton.addEventListener('touchend', cancelSOSTimer);
+            }
+            
+            function startSOSTimer() {
+                sosTimer = setTimeout(() => {
+                    activateEmergency();
+                }, 3000);
+                
+                sosButton.style.transform = 'scale(0.95)';
+                sosButton.innerHTML = `
+                    <div class="sos-inner">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>HOLD...</span>
+                        <div class="sos-subtitle">ACTIVATING</div>
+                    </div>
+                `;
+            }
+            
+            function cancelSOSTimer() {
+                clearTimeout(sosTimer);
+                sosButton.style.transform = 'scale(1)';
+                sosButton.innerHTML = `
+                    <div class="sos-inner">
+                        <i class="fas fa-phone"></i>
+                        <span>SOS</span>
+                        <div class="sos-subtitle">EMERGENCY</div>
+                    </div>
+                `;
+            }
+            
+            function activateEmergency() {
+                sendEmergencySignal(selectedType);
+            }
+            
+            function sendEmergencySignal(type) {
+                console.log('Emergency signal sent!', {
+                    type: type,
+                    location: userLocationName,
+                    coordinates: userCoordinates,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (emergencyModal) {
+                    emergencyModal.style.display = 'block';
+                    startResponseTimer();
+                }
+                
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200, 100, 200]);
+                }
+                
+                showNotification(`🚨 Emergency signal sent from ${userLocationName}`, 'success');
+                
+                simulateEmergencyDispatch(type);
+            }
+            
+            function simulateEmergencyDispatch(type) {
+                const services = {
+                    medical: { name: 'Ambulance', number: '108' },
+                    fire: { name: 'Fire Department', number: '101' },
+                    police: { name: 'Police', number: '100' },
+                    disaster: { name: 'Disaster Response', number: '108' }
+                };
+                
+                const service = services[type] || services.medical;
+                
+                setTimeout(() => {
+                    showNotification(`📞 ${service.name} notified - ETA: 5-8 minutes`, 'info');
+                }, 2000);
+                
+                setTimeout(() => {
+                    showNotification(`🚁 Emergency services dispatched to ${userLocationName}`, 'info');
+                }, 4000);
+            }
+            
+            function startResponseTimer() {
+                let timeLeft = 330; // 5:30 minutes
+                const timerDisplay = document.getElementById('responseTimer');
+                
+                const timerInterval = setInterval(() => {
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    
+                    if (timerDisplay) {
+                        timerDisplay.textContent = 
+                            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                    
+                    timeLeft--;
+                    
+                    if (timeLeft < 0) {
+                        clearInterval(timerInterval);
+                        if (timerDisplay) {
+                            timerDisplay.textContent = 'HELP ARRIVED';
+                            timerDisplay.style.color = '#00cc44';
+                        }
+                        showNotification('✅ Emergency responders have arrived!', 'success');
+                    }
+                }, 1000);
+            }
+            
+            // Send message functionality
+            if (sendMessageBtn) {
+                sendMessageBtn.addEventListener('click', function() {
+                    const message = document.getElementById('emergencyMessage').value;
+                    sendLocationAndMessage(message);
+                });
+            }
+            
+            function sendLocationAndMessage(message) {
+                const messageData = {
+                    message: message || 'Emergency assistance needed',
+                    location: userLocationName,
+                    coordinates: userCoordinates,
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                console.log('Location and message sent:', messageData);
+                showNotification('📧 Emergency message sent to your contacts!', 'success');
+                
+                setTimeout(() => {
+                    showNotification(`📍 Location shared: ${userLocationName}`, 'info');
+                }, 1500);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'linear-gradient(135deg, #00cc44, #008833)',
+                error: 'linear-gradient(135deg, #ff4444, #cc0000)',
+                warning: 'linear-gradient(135deg, #ff8800, #ff6600)',
+                info: 'linear-gradient(135deg, #0088ff, #0066cc)'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: ${colors[type] || colors.info}; color: white; padding: 1rem 1.5rem; border-radius: 10px; display: flex; align-items: center; gap: 10px; z-index: 3000; animation: slideInRight 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 350px;">
+                    <i class="fas fa-${icons[type] || icons.info}"></i>
+                    <span style="flex: 1; line-height: 1.4;">${message}</span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-left: 10px;">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Close modal functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

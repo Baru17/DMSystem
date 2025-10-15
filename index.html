@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Response Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        /* Hamburger Menu Styles */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+
+        /* Hamburger Animation */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #ff4444;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #ff4444;
+        }
+
+        /* Mobile Navigation Menu */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 100%;
+                max-width: 300px;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                border-left: 3px solid #ff4444;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: center;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+            
+            .nav-link:hover,
+            .nav-link.active {
+                background: rgba(255, 68, 68, 0.2);
+                border-color: #ff4444;
+                transform: translateX(5px);
+            }
+            
+            /* Mobile menu backdrop */
+            .nav-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* Close button for mobile menu */
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 68, 68, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-close:hover {
+            background: rgba(255, 68, 68, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Emergency button in mobile menu */
+        .mobile-emergency-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+            text-decoration: none;
+        }
+
+        .mobile-emergency-btn:hover {
+            background: linear-gradient(135deg, #ff6666, #ff4444);
+            transform: scale(1.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff4444, #ff8800, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInUp 1s ease-out;
+            margin-top: 180px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #cccccc;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+
+        /* Alert Ticker */
+        .alert-ticker {
+            background: rgba(255, 68, 68, 0.2);
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin: 2rem 0;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out 0.4s both;
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: scroll 20s linear infinite;
+        }
+
+        .ticker-item {
+            white-space: nowrap;
+            margin-right: 50px;
+            color: #ffcc00;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 2rem 1rem;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.emergency {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #ff8800, #ff6600);
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #00cc44, #008833);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+        }
+
+        /* Pulse Animation */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 5rem 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ff4444;
+        }
+
+        .stat-content h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffcc00;
+        }
+
+        /* Weather Section */
+        .weather-section {
+            padding: 3rem 0;
+        }
+
+        .weather-card {
+            padding: 2rem;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        .weather-card h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ff8800;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .weather-desc {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin: 0.5rem 0;
+        }
+
+        .weather-risk {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .weather-risk.high {
+            background: linear-gradient(135deg, black, #cc0000);
+        }
+
+        .weather-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0.5rem 0;
+            color: #cccccc;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animated {
+            animation-fill-mode: both;
+        }
+
+        .signout{
+            background-color: #ff4444;
+            color: white;
+            font-weight: bolder;
+            margin-left: 15px;
+            padding: 20px;
+            border-radius: 12px 16px 12px 16px;
+            width: 150px;
+            height: 75px;
+            border: none;
+            transition: opacity 0.15s;
+            font-size: larger;
+        }
+
+        .signout:hover{
+            opacity: 0.8;
+        }
+
+        /* Background Particles */
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) {
+            top: 20%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(3) {
+            top: 80%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.0rem;
+                margin-top: 150px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .weather-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-container {
+                padding: 1rem;
+            }
+            
+            .nav-menu {
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SafeGuard Emergency</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+               <a href="alerts.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </a>
+                <a href="map.html" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map</span>
+                </a>
+                <a href="sos.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>SOS</span>
+                </a>
+                <a href="contacts.html" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="safety.html" class="nav-link">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Safety</span>
+                </a>
+                 <a href="admin.html" class="nav-link">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Admin</span>
+                </a>
+            </div>
+<a href="login.html">
+  <button class="signout">
+    <i class="fa fa-sign-out" aria-hidden="true"></i> Sign Out
+  </button>
+</a>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title animated">Emergency Response System</h1>
+            <p class="hero-subtitle">Real-time disaster management and emergency assistance</p>
+            
+            <!-- Alert Ticker -->
+            <div class="alert-ticker">
+                <div class="ticker-content">
+                    <span class="ticker-item">🚨 Severe Weather Warning - Metro Area</span>
+                    <span class="ticker-item">⚠️ Flash Flood Watch - River District</span>
+                    <span class="ticker-item">🔥 Fire Safety Drill - Downtown 3PM</span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="sos.html" class="action-btn emergency pulse">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>EMERGENCY SOS</span>
+                </a>
+                <a href="alerts.html" class="action-btn warning">
+                    <i class="fas fa-bell"></i>
+                    <span>Live Alerts</span>
+                </a>
+                <a href="map.html" class="action-btn info">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Emergency Map</span>
+                </a>
+                <a href="contacts.html" class="action-btn success">
+                    <i class="fas fa-phone"></i>
+                    <span>Emergency Contacts</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Animated Background -->
+        <div class="hero-bg">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="counter" data-target="15847">0</h3>
+                        <p>People Helped</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3><span class="counter" data-target="2">0</span>min</h3>
+                        <p>Avg Response Time</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-exclamation"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="counter" data-target="847">0</h3>
+                        <p>Active Alerts</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-location-dot"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="counter" data-target="124">0</h3>
+                        <p>Safe Zones</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Weather -->
+    <section class="weather-section">
+        <div class="container">
+            <div class="weather-card glass">
+                <h2>Current Weather Status</h2>
+                <div class="weather-grid">
+                    <div class="weather-main">
+                        <div class="weather-temp">28°C</div>
+                        <div class="weather-desc">Partly Cloudy</div>
+                        <div class="weather-risk high">High Risk</div>
+                    </div>
+                    <div class="weather-details">
+                        <div class="weather-item">
+                            <i class="fas fa-eye"></i>
+                            <span>Visibility: 10km</span>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fas fa-wind"></i>
+                            <span>Wind: 15 km/h</span>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fas fa-droplet"></i>
+                            <span>Humidity: 65%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initAnimations();
+            initCounters();
+            initWeatherSimulation();
+            simulateRealTimeAlerts();
+            
+            if (window.innerWidth <= 768 && !localStorage.getItem('mobile-menu-hint-shown')) {
+                setTimeout(() => {
+                    showNotification('💡 Tap the menu icon (☰) to navigate', 'info');
+                    localStorage.setItem('mobile-menu-hint-shown', 'true');
+                }, 2000);
+            }
+        });
+
+        function initNavigation() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+            
+            const backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            body.appendChild(backdrop);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-menu-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const emergencyBtn = document.createElement('a');
+            emergencyBtn.href = 'sos.html';
+            emergencyBtn.className = 'mobile-emergency-btn';
+            emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+            
+            if (hamburger && navMenu) {
+                navMenu.insertBefore(closeBtn, navMenu.firstChild);
+                navMenu.appendChild(emergencyBtn);
+                
+                hamburger.addEventListener('click', toggleMobileMenu);
+                closeBtn.addEventListener('click', closeMobileMenu);
+                backdrop.addEventListener('click', closeMobileMenu);
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            closeMobileMenu();
+                        }
+                    });
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                        closeMobileMenu();
+                    }
+                });
+                
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 768) {
+                        closeMobileMenu();
+                    }
+                });
+            }
+            
+            function toggleMobileMenu() {
+                if (hamburger.classList.contains('active')) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            }
+            
+            function openMobileMenu() {
+                hamburger.classList.add('active');
+                navMenu.classList.add('active');
+                backdrop.classList.add('active');
+                body.style.overflow = 'hidden';
+                
+                const menuItems = navMenu.querySelectorAll('.nav-link');
+                menuItems.forEach((item, index) => {
+                    item.style.animationDelay = `${(index + 1) * 0.1}s`;
+                });
+                
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+            
+            function closeMobileMenu() {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                backdrop.classList.remove('active');
+                body.style.overflow = '';
+                
+                const menuItems = navMenu.querySelectorAll('.nav-link');
+                menuItems.forEach(item => {
+                    item.style.animationDelay = '';
+                });
+            }
+        }
+
+        function initAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.stat-card, .weather-card').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        function initCounters() {
+            const counters = document.querySelectorAll('.counter');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const increment = target / 100;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        setTimeout(updateCounter, 20);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    if (entries[0].isIntersecting) {
+                        updateCounter();
+                        observer.disconnect();
+                    }
+                });
+                
+                observer.observe(counter);
+            });
+        }
+
+        const OPENWEATHER_API_KEY = '16d2c47ad37076fc2ad4bc48d96b0607';
+
+async function fetchWeatherData(city = "Palakarai") {
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('Weather data fetch failed');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Weather fetch error:', error);
+    return null;
+  }
+}
+
+function updateWeatherUI(data) {
+  if (!data) return;
+  const tempElement = document.querySelector('.weather-temp');
+  const conditionElement = document.querySelector('.weather-desc');
+  const riskElement = document.querySelector('.weather-risk');
+  const visElement = document.getElementById('weather-visibility') || document.querySelector('.weather-item:nth-child(1) span');
+  const windElement = document.getElementById('weather-wind') || document.querySelector('.weather-item:nth-child(2) span');
+  const humidityElement = document.getElementById('weather-humidity') || document.querySelector('.weather-item:nth-child(3) span');
+
+  if (tempElement) tempElement.textContent = `${Math.round(data.main.temp)}°C`;
+  if (conditionElement) conditionElement.textContent = (data.weather && data.weather[0].description) ? data.weather[0].description : '--';
+  if (visElement) visElement.textContent = `Visibility: ${data.visibility ? (data.visibility/1000).toFixed(1) : '--'} km`;
+  if (windElement) windElement.textContent = `Wind: ${data.wind && data.wind.speed ? Math.round(data.wind.speed) : '--'} km/h`;
+  if (humidityElement) humidityElement.textContent = `Humidity: ${data.main && data.main.humidity ? data.main.humidity : '--'}%`;
+
+  function getRiskLevel(weatherId) {
+    if (weatherId >= 200 && weatherId < 300) return 'high';       // Thunderstorm
+    if (weatherId >= 500 && weatherId < 600) return 'moderate';   // Rain
+    if (weatherId === 800) return 'low';                          // Clear
+    if (weatherId >= 801 && weatherId < 900) return 'low';        // Cloudy
+    return 'moderate';
+  }
+  if (riskElement && data.weather && data.weather[0]) {
+    const riskLevel = getRiskLevel(data.weather[0].id);
+    riskElement.className = `weather-risk ${riskLevel}`;
+    riskElement.textContent = `${riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)} Risk`;
+  }
+}
+
+(async () => {
+  const weatherData = await fetchWeatherData("Salem,IN");
+  updateWeatherUI(weatherData);
+})();
+
+        function simulateRealTimeAlerts() {
+            const alerts = [
+                { message: 'Thunderstorm approaching Salem in 15 minutes', level: 'high' },
+                { message: 'Water level rising in river district', level: 'medium' },
+                { message: 'Fire safety drill completed successfully', level: 'low' },
+                { message: 'Minor tremors detected in nearby areas', level: 'medium' }
+            ];
+            
+            setInterval(() => {
+                const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
+                showNotification(`🚨 ${randomAlert.message}`, randomAlert.level === 'high' ? 'error' : 'warning');
+            }, 45000);
+        }
+
+        const buttons = document.querySelectorAll('button, .action-btn, .nav-link');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            button.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+    </script><!-- Remove ALL existing Firebase scripts and replace with this: -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+    // Single, correct Firebase initialization
+    const firebaseConfig = {
+        apiKey: "AIzaSyD0Ew4UGcLBN-ORRf6d2hDW3YaPdNDNfhQ",
+        authDomain: "safeguardemergency-3cfc9.firebaseapp.com",
+        databaseURL: "https://safeguardemergency-3cfc9-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "safeguardemergency-3cfc9",
+        storageBucket: "safeguardemergency-3cfc9.firebasestorage.app",
+        messagingSenderId: "907977274929",
+        appId: "1:907977274929:web:96870f3d2bdca9507f8710"
+    };
+
+    // Initialize Firebase ONCE
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Track last seen notification to avoid duplicates
+    let lastNotificationTime = Date.now();
+
+    // Listen ONLY for NEW notifications (not old ones)
+    db.ref('notifications').orderByChild('timestamp').startAt(lastNotificationTime).on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        console.log('Notification received:', data);
+        
+        // Only show if it's actually new
+        if (data && data.message && data.timestamp > lastNotificationTime) {
+            showFirebaseNotification(data.message);
+            lastNotificationTime = data.timestamp;
+        }
+    });
+
+    function showFirebaseNotification(message) {
+        // Remove any existing Firebase notifications first
+        const existingNotifs = document.querySelectorAll('.firebase-notification');
+        existingNotifs.forEach(notif => notif.remove());
+
+        const notif = document.createElement('div');
+        notif.className = 'firebase-notification';
+        notif.textContent = '🚨 ADMIN ALERT: ' + message;
+        notif.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4444;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            animation: slideInRight 0.3s ease;
+            max-width: 350px;
+            word-wrap: break-word;
+        `;
+        document.body.appendChild(notif);
+        
+        // Remove after 6 seconds
+        setTimeout(() => {
+            if (notif && notif.parentNode) {
+                notif.remove();
+            }
+        }, 6000);
+        
+        console.log('Showing Firebase notification:', message);
+    }
+</script>
+
+</body>
+</html>
+

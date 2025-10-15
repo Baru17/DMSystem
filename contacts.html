@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Contacts - SafeGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #ff4444;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #ff4444;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 300px;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                border-left: 3px solid #ff4444;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .nav-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-emergency-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        /* Contacts Page Styles */
+        .contacts-container {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .emergency-services,
+        .personal-contacts {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-card.emergency {
+            border-left-color: #ff4444;
+        }
+
+        .contact-card.medical {
+            border-left-color: #00cc44;
+        }
+
+        .contact-card.fire {
+            border-left-color: #ff8800;
+        }
+
+        .contact-card.police {
+            border-left-color: #0088ff;
+        }
+
+        .contact-card.personal {
+            border-left-color: #8844ff;
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .contact-icon.emergency {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+        }
+
+        .contact-icon.medical {
+            background: linear-gradient(135deg, #00cc44, #008833);
+        }
+
+        .contact-icon.fire {
+            background: linear-gradient(135deg, #ff8800, #ff6600);
+        }
+
+        .contact-icon.police {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+        }
+
+        .contact-icon.personal {
+            background: linear-gradient(135deg, #8844ff, #6600cc);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            color: white;
+        }
+
+        .contact-role {
+            font-size: 0.9rem;
+            color: #cccccc;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-number {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .call-btn {
+            background: linear-gradient(135deg, #00cc44, #008833);
+        }
+
+        .message-btn {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Emergency Numbers Quick Access */
+        .quick-access {
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.1), rgba(204, 0, 0, 0.05));
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .quick-access h2 {
+            color: #ff4444;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .quick-numbers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quick-number {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .quick-number:hover {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .quick-number-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #ff4444;
+        }
+
+        .quick-number-name {
+            font-size: 0.9rem;
+            color: #cccccc;
+            margin-bottom: 0.3rem;
+        }
+
+        .quick-number-digits {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        /* Add Contact Form */
+        .add-contact {
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .add-contact h3 {
+            color: #ff8800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #cccccc;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff8800;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .add-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #00cc44, #008833);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-btn:hover {
+            background: linear-gradient(135deg, #00dd55, #009944);
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated {
+            animation: slideInUp 1s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .contacts-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .quick-numbers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .contact-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+            }
+            
+            .contact-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .contact-info {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-numbers {
+                grid-template-columns: 1fr;
+            }
+            
+            .contacts-container {
+                padding-top: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SafeGuard Emergency</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="alerts.html" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </a>
+                <a href="map.html" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map</span>
+                </a>
+                <a href="sos.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>SOS</span>
+                </a>
+                <a href="contacts.html" class="nav-link active">
+                    <i class="fas fa-phone"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="safety.html" class="nav-link">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Safety</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="contacts-container">
+        <div class="container">
+            <h1 class="page-title animated">
+                <i class="fas fa-phone"></i>
+                Emergency Contacts
+            </h1>
+            <p class="page-subtitle">Quick access to emergency services and important contacts</p>
+
+            <!-- Emergency Numbers Quick Access -->
+            <div class="quick-access">
+                <h2><i class="fas fa-phone-alt"></i> Quick Emergency Numbers</h2>
+                <p>Tap any number to call immediately</p>
+                
+                <div class="quick-numbers">
+                    <div class="quick-number" onclick="quickCall('112', 'Universal Emergency')">
+                        <div class="quick-number-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="quick-number-name">Emergency</div>
+                        <div class="quick-number-digits">112</div>
+                    </div>
+                    
+                    <div class="quick-number" onclick="quickCall('100', 'Police')">
+                        <div class="quick-number-icon">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                        <div class="quick-number-name">Police</div>
+                        <div class="quick-number-digits">100</div>
+                    </div>
+                    
+                    <div class="quick-number" onclick="quickCall('101', 'Fire Department')">
+                        <div class="quick-number-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        <div class="quick-number-name">Fire Dept</div>
+                        <div class="quick-number-digits">101</div>
+                    </div>
+                    
+                    <div class="quick-number" onclick="quickCall('108', 'Ambulance')">
+                        <div class="quick-number-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <div class="quick-number-name">Ambulance</div>
+                        <div class="quick-number-digits">108</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Grid -->
+            <div class="contacts-grid">
+                <!-- Emergency Services -->
+                <div class="emergency-services glass">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Emergency Services
+                    </h2>
+                    
+                    <div class="contact-list">
+                        <div class="contact-card emergency">
+                            <div class="contact-icon emergency">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Emergency Helpline</div>
+                                <div class="contact-role">24/7 Emergency Response</div>
+                                <div class="contact-number">112</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('112', 'Emergency Helpline')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="contact-card medical">
+                            <div class="contact-icon medical">
+                                <i class="fas fa-ambulance"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Erode Government Hospital</div>
+                                <div class="contact-role">Emergency Medical Services</div>
+                                <div class="contact-number">0427-2444444</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('04272444444', 'Salem Govt Hospital')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="action-btn message-btn" onclick="sendMessage('04272444444')">
+                                    <i class="fas fa-sms"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="contact-card fire">
+                            <div class="contact-icon fire">
+                                <i class="fas fa-fire-extinguisher"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Erode Fire Station</div>
+                                <div class="contact-role">Fire & Rescue Services</div>
+                                <div class="contact-number">0427-2315315</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('04272315315', 'Salem Fire Station')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="action-btn message-btn" onclick="sendMessage('04272315315')">
+                                    <i class="fas fa-sms"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="contact-card police">
+                            <div class="contact-icon police">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Erode Police Control Room</div>
+                                <div class="contact-role">Law Enforcement</div>
+                                <div class="contact-number">0427-2445500</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('04272445500', 'Salem Police')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="action-btn message-btn" onclick="sendMessage('04272445500')">
+                                    <i class="fas fa-sms"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Contacts -->
+                <div class="personal-contacts glass">
+                    <h2 class="section-title">
+                        <i class="fas fa-users"></i>
+                        Personal Emergency Contacts
+                    </h2>
+                    
+                    <div class="contact-list" id="personalContactsList">
+                        <div class="contact-card personal">
+                            <div class="contact-icon personal">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Emergency Contact 1</div>
+                                <div class="contact-role">Primary Contact</div>
+                                <div class="contact-number">+91 98765 43210</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('+919876543210', 'Emergency Contact 1')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="action-btn message-btn" onclick="sendMessage('+919876543210')">
+                                    <i class="fas fa-sms"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="contact-card personal">
+                            <div class="contact-icon personal">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-name">Family Doctor</div>
+                                <div class="contact-role">Medical Emergency</div>
+                                <div class="contact-number">+91 87654 32109</div>
+                            </div>
+                            <div class="contact-actions">
+                                <button class="action-btn call-btn" onclick="quickCall('+918765432109', 'Family Doctor')">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="action-btn message-btn" onclick="sendMessage('+918765432109')">
+                                    <i class="fas fa-sms"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add New Contact -->
+                    <div class="add-contact">
+                        <h3><i class="fas fa-plus-circle"></i> Add Emergency Contact</h3>
+                        <form class="contact-form" id="addContactForm">
+                            <div class="form-group">
+                                <label for="contactName">Name</label>
+                                <input type="text" id="contactName" placeholder="Enter contact name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactNumber">Phone Number</label>
+                                <input type="tel" id="contactNumber" placeholder="+91 98765 43210" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactRole">Role/Relationship</label>
+                                <input type="text" id="contactRole" placeholder="e.g., Family, Doctor, Friend" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactType">Contact Type</label>
+                                <select id="contactType">
+                                    <option value="personal">Personal</option>
+                                    <option value="medical">Medical</option>
+                                    <option value="work">Work</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <button type="submit" class="add-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Add Contact
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initContactForm();
+            loadPersonalContacts();
+        });
+
+        function initNavigation() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+            
+            const backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            body.appendChild(backdrop);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-menu-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const emergencyBtn = document.createElement('a');
+            emergencyBtn.href = 'sos.html';
+            emergencyBtn.className = 'mobile-emergency-btn';
+            emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+            
+            if (hamburger && navMenu) {
+                navMenu.insertBefore(closeBtn, navMenu.firstChild);
+                navMenu.appendChild(emergencyBtn);
+                
+                hamburger.addEventListener('click', () => {
+                    if (hamburger.classList.contains('active')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                });
+                
+                closeBtn.addEventListener('click', closeMobileMenu);
+                backdrop.addEventListener('click', closeMobileMenu);
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            closeMobileMenu();
+                        }
+                    });
+                });
+            }
+            
+            function openMobileMenu() {
+                hamburger.classList.add('active');
+                navMenu.classList.add('active');
+                backdrop.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                backdrop.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+
+        function quickCall(number, name) {
+            if (confirm(`Call ${name} at ${number}?`)) {
+                window.location.href = `tel:${number}`;
+                showNotification(`📞 Calling ${name}...`, 'info');
+            }
+        }
+
+        function sendMessage(number) {
+            if (confirm(`Send emergency message to ${number}?`)) {
+                window.location.href = `sms:${number}?body=EMERGENCY: I need help! Please contact me immediately. My location is being shared.`;
+                showNotification(`📱 Sending emergency message...`, 'info');
+            }
+        }
+
+        function initContactForm() {
+            const form = document.getElementById('addContactForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('contactName').value;
+                const number = document.getElementById('contactNumber').value;
+                const role = document.getElementById('contactRole').value;
+                const type = document.getElementById('contactType').value;
+                
+                addNewContact({ name, number, role, type });
+                
+                // Reset form
+                form.reset();
+                showNotification('✅ Contact added successfully!', 'success');
+            });
+        }
+
+        function addNewContact(contact) {
+            const contactsList = document.getElementById('personalContactsList');
+            
+            const contactCard = document.createElement('div');
+            contactCard.className = `contact-card ${contact.type}`;
+            
+            contactCard.innerHTML = `
+                <div class="contact-icon ${contact.type}">
+                    <i class="fas fa-${getContactIcon(contact.type)}"></i>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">${contact.name}</div>
+                    <div class="contact-role">${contact.role}</div>
+                    <div class="contact-number">${contact.number}</div>
+                </div>
+                <div class="contact-actions">
+                    <button class="action-btn call-btn" onclick="quickCall('${contact.number}', '${contact.name}')">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="action-btn message-btn" onclick="sendMessage('${contact.number}')">
+                        <i class="fas fa-sms"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Insert before the add-contact div
+            const addContactDiv = contactsList.querySelector('.add-contact');
+            contactsList.insertBefore(contactCard, addContactDiv);
+            
+            // Save to localStorage
+            savePersonalContact(contact);
+        }
+
+        function getContactIcon(type) {
+            const icons = {
+                personal: 'user',
+                medical: 'user-md',
+                work: 'briefcase'
+            };
+            return icons[type] || 'user';
+        }
+
+        function savePersonalContact(contact) {
+            const contacts = JSON.parse(localStorage.getItem('personalContacts') || '[]');
+            contacts.push(contact);
+            localStorage.setItem('personalContacts', JSON.stringify(contacts));
+        }
+
+        function loadPersonalContacts() {
+            const contacts = JSON.parse(localStorage.getItem('personalContacts') || '[]');
+            contacts.forEach(contact => {
+                addNewContact(contact);
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'linear-gradient(135deg, #00cc44, #008833)',
+                error: 'linear-gradient(135deg, #ff4444, #cc0000)',
+                warning: 'linear-gradient(135deg, #ff8800, #ff6600)',
+                info: 'linear-gradient(135deg, #0088ff, #0066cc)'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: ${colors[type] || colors.info}; color: white; padding: 1rem 1.5rem; border-radius: 10px; display: flex; align-items: center; gap: 10px; z-index: 3000; animation: slideInRight 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 350px;">
+                    <i class="fas fa-${icons[type] || icons.info}"></i>
+                    <span style="flex: 1; line-height: 1.4;">${message}</span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-left: 10px;">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

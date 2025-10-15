@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Alerts - SafeGuard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Copy all styles from index.html plus additional styles for alerts page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #cccccc;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #ffffff;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #ff4444;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #ff4444;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 300px;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 26, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+                border-left: 3px solid #ff4444;
+                box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-link {
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: left;
+                font-size: 1.1rem;
+            }
+            
+            .nav-link:hover,
+            .nav-link.active {
+                background: rgba(255, 68, 68, 0.2);
+                border-color: #ff4444;
+            }
+            
+            .nav-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 68, 68, 0.1);
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-emergency-btn {
+            margin-top: auto;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        /* Alerts Page Styles */
+        .alerts-container {
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .alert-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 204, 68, 0.2);
+            border-radius: 25px;
+            border: 1px solid #00cc44;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00cc44;
+            animation: pulse 2s infinite;
+        }
+
+        .live-alert-banner {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(204, 0, 0, 0.1));
+            border: 2px solid #ff4444;
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 68, 68, 0.6); }
+        }
+
+        .banner-icon {
+            font-size: 3rem;
+            color: #ff4444;
+        }
+
+        .banner-content {
+            flex: 1;
+        }
+
+        .banner-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #ff4444;
+        }
+
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .alerts-column h2 {
+            margin-bottom: 1.5rem;
+            color: #ff8800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .alert-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .alert-card.critical {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .alert-card.high {
+            border-left-color: #ff8800;
+            background: rgba(255, 136, 0, 0.1);
+        }
+
+        .alert-card.medium {
+            border-left-color: #ffcc00;
+            background: rgba(255, 204, 0, 0.1);
+        }
+
+        .alert-card.low {
+            border-left-color: #00cc44;
+            background: rgba(0, 204, 68, 0.1);
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .alert-title {
+            flex: 1;
+        }
+
+        .alert-title h3 {
+            margin-bottom: 0.2rem;
+            color: white;
+        }
+
+        .alert-level {
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .alert-level.critical {
+            background: #ff4444;
+            color: white;
+        }
+
+        .alert-level.high {
+            background: #ff8800;
+            color: white;
+        }
+
+        .alert-level.medium {
+            background: #ffcc00;
+            color: #333;
+        }
+
+        .alert-level.low {
+            background: #00cc44;
+            color: white;
+        }
+
+        .alert-time {
+            color: #cccccc;
+            font-weight: bold;
+        }
+
+        .alert-body p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .alert-location,
+        .alert-expires {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0.5rem 0;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn.info {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+        }
+
+        .action-btn.warning {
+            background: linear-gradient(135deg, #ff8800, #ff6600);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #00cc44, #008833);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sidebar Styles */
+        .alerts-sidebar > div {
+            margin-bottom: 2rem;
+        }
+
+        .alerts-sidebar h3 {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ff8800;
+        }
+
+        .alert-stats {
+            padding: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #cccccc;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .stat-value.critical {
+            color: #ff4444;
+        }
+
+        .stat-value.high {
+            color: #ff8800;
+        }
+
+        .stat-value.medium {
+            color: #ffcc00;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated {
+            animation: slideInUp 1s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .alerts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .alerts-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .live-alert-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .alert-actions {
+                justify-content: center;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SafeGuard Emergency</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="alerts.html" class="nav-link active">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                </a>
+                <a href="map.html" class="nav-link">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span>Map</span>
+                </a>
+                <a href="sos.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>SOS</span>
+                </a>
+                <a href="contacts.html" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="safety.html" class="nav-link">
+                    <i class="fa-solid fa-shield"></i>
+                    <span>Safety</span>
+                </a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="alerts-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="alerts-header">
+                <h1 class="page-title animated">
+                    <i class="fas fa-bell"></i>
+                    Real-Time Emergency Alerts
+                </h1>
+                <div class="alert-status">
+                    <div class="status-indicator active"></div>
+                    <span>Live Monitoring Active</span>
+                </div>
+            </div>
+
+            <!-- Live Alert Banner -->
+            <div class="live-alert-banner">
+                <div class="banner-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="banner-content">
+                    <h3>SEVERE WEATHER WARNING</h3>
+                    <p>Thunderstorm with heavy rain and strong winds approaching Metro Area. Seek shelter immediately!</p>
+                    <div class="banner-time">
+                        <i class="fas fa-clock"></i>
+                        Updated: <span id="liveTime">13:25</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Grid -->
+            <div class="alerts-grid">
+                <!-- Current Alerts -->
+                <div class="alerts-column">
+                    <h2><i class="fas fa-clock"></i> Current Alerts</h2>
+                    
+                    <div class="alert-card high">
+                        <div class="alert-header">
+                            <div class="alert-icon">
+                                <i class="fas fa-cloud-rain"></i>
+                            </div>
+                            <div class="alert-title">
+                                <h3>Severe Thunderstorm Warning</h3>
+                                <span class="alert-level high">HIGH</span>
+                            </div>
+                            <div class="alert-time">13:30</div>
+                        </div>
+                        <div class="alert-body">
+                            <p>Heavy rain and strong winds expected in Metro Area. Wind speeds up to 70 km/h. Seek shelter immediately and avoid outdoor activities.</p>
+                            <div class="alert-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Metro Area, Downtown District
+                            </div>
+                            <div class="alert-expires">
+                                <i class="fas fa-hourglass-end"></i>
+                                Expires: 18:00 Today
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="action-btn info">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="action-btn warning">
+                                <i class="fas fa-bell"></i> Notify Contacts
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="alert-card medium">
+                        <div class="alert-header">
+                            <div class="alert-icon">
+                                <i class="fas fa-water"></i>
+                            </div>
+                            <div class="alert-title">
+                                <h3>Flash Flood Watch</h3>
+                                <span class="alert-level medium">MEDIUM</span>
+                            </div>
+                            <div class="alert-time">12:15</div>
+                        </div>
+                        <div class="alert-body">
+                            <p>Rising water levels in low-lying areas of River District. Avoid unnecessary travel and stay away from storm drains.</p>
+                            <div class="alert-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                River District, Waterfront Area
+                            </div>
+                            <div class="alert-expires">
+                                <i class="fas fa-hourglass-end"></i>
+                                Expires: 20:00 Today
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="action-btn info">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="action-btn success">
+                                <i class="fas fa-route"></i> Safe Routes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="alert-card critical">
+                        <div class="alert-header">
+                            <div class="alert-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="alert-title">
+                                <h3>Wildfire Emergency</h3>
+                                <span class="alert-level critical">CRITICAL</span>
+                            </div>
+                            <div class="alert-time">11:45</div>
+                        </div>
+                        <div class="alert-body">
+                            <p>Rapidly spreading wildfire in North Hills area. Immediate evacuation required for zones A and B. Emergency shelters activated.</p>
+                            <div class="alert-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                North Hills, Evacuation Zones A & B
+                            </div>
+                            <div class="alert-expires">
+                                <i class="fas fa-hourglass-end"></i>
+                                Active until further notice
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="action-btn warning">
+                                <i class="fas fa-running"></i> Evacuation Info
+                            </button>
+                            <button class="action-btn success">
+                                <i class="fas fa-home"></i> Find Shelter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Statistics -->
+                <div class="alerts-sidebar">
+                    <div class="alert-stats glass">
+                        <h3><i class="fas fa-chart-bar"></i> Alert Statistics</h3>
+                        
+                        <div class="stat-item">
+                            <div class="stat-label">Active Alerts</div>
+                            <div class="stat-value">
+                                <span class="counter" data-target="23">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-label">Critical</div>
+                            <div class="stat-value critical">
+                                <span class="counter" data-target="2">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-label">High Priority</div>
+                            <div class="stat-value high">
+                                <span class="counter" data-target="5">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-label">Medium Priority</div>
+                            <div class="stat-value medium">
+                                <span class="counter" data-target="8">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-label">People Affected</div>
+                            <div class="stat-value">
+                                <span class="counter" data-target="45670">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initNavigation();
+            initCounters();
+            updateLiveTime();
+            setInterval(updateLiveTime, 1000);
+        });
+
+        function initNavigation() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const body = document.body;
+            
+            const backdrop = document.createElement('div');
+            backdrop.className = 'nav-backdrop';
+            body.appendChild(backdrop);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-menu-close';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            const emergencyBtn = document.createElement('a');
+            emergencyBtn.href = 'sos.html';
+            emergencyBtn.className = 'mobile-emergency-btn';
+            emergencyBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS';
+            
+            if (hamburger && navMenu) {
+                navMenu.insertBefore(closeBtn, navMenu.firstChild);
+                navMenu.appendChild(emergencyBtn);
+                
+                hamburger.addEventListener('click', () => {
+                    if (hamburger.classList.contains('active')) {
+                        closeMobileMenu();
+                    } else {
+                        openMobileMenu();
+                    }
+                });
+                
+                closeBtn.addEventListener('click', closeMobileMenu);
+                backdrop.addEventListener('click', closeMobileMenu);
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            closeMobileMenu();
+                        }
+                    });
+                });
+            }
+            
+            function openMobileMenu() {
+                hamburger.classList.add('active');
+                navMenu.classList.add('active');
+                backdrop.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+                backdrop.classList.remove('active');
+                body.style.overflow = '';
+            }
+        }
+
+        function updateLiveTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            const liveTimeElement = document.getElementById('liveTime');
+            if (liveTimeElement) {
+                liveTimeElement.textContent = timeStr;
+            }
+        }
+
+        function initCounters() {
+            const counters = document.querySelectorAll('.counter');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const increment = target / 50;
+                let current = 0;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        setTimeout(updateCounter, 40);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Show alert notifications
+        setInterval(() => {
+            const alerts = [
+                'New severe weather warning issued for Salem district',
+                'Flash flood alert updated - water levels rising',
+                'Emergency shelter capacity updated',
+                'Air quality alert - stay indoors'
+            ];
+            
+            const alert = alerts[Math.floor(Math.random() * alerts.length)];
+            showNotification('🚨 ' + alert);
+        }, 30000);
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; background: linear-gradient(135deg, #ff8800, #ff6600); color: white; padding: 1rem 1.5rem; border-radius: 10px; display: flex; align-items: center; gap: 10px; z-index: 3000; animation: slideInRight 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 350px;">
+                    <i class="fas fa-bell"></i>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; margin-left: 10px;">&times;</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

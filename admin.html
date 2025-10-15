@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #222; color: white; padding: 20px; max-width: 500px; margin: 0 auto; }
+        h2 { color: #ff4444; }
+        textarea { width: 100%; height: 100px; padding: 10px; font-size: 14px; }
+        button { background: #ff4444; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #cc0000; }
+        #status { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Admin Notification Panel</h2>
+    <textarea id="messageText" placeholder="Enter notification message..."></textarea>
+    <br><br>
+    <button onclick="sendNotification()">Send Notification</button>
+    <div id="status"></div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <script>
+const firebaseConfig = {
+    // Your config here
+
+    apiKey: "AIzaSyD0Ew4UGcLBN-ORRf6d2hDW3YaPdNDNfhQ",
+    authDomain: "safeguardemergency-3cfc9.firebaseapp.com",
+    projectId: "safeguardemergency-3cfc9",
+    storageBucket: "safeguardemergency-3cfc9.firebasestorage.app",
+    messagingSenderId: "907977274929",
+    appId: "1:907977274929:web:96870f3d2bdca9507f8710",
+    databaseURL: "https://safeguardemergency-3cfc9-default-rtdb.asia-southeast1.firebasedatabase.app"
+
+  
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function sendNotification() {
+    const message = document.getElementById('messageText').value.trim();
+    
+    if (!message) {
+        alert('Please enter a message!');
+        return;
+    }
+
+    console.log('Attempting to send:', message);
+    
+    // Test Firebase connection
+    db.ref('notifications').push({
+        message: message,
+        timestamp: Date.now()
+    }).then(() => {
+        document.getElementById('status').textContent = 'SUCCESS! Message sent';
+        console.log('SUCCESS: Message sent to Firebase');
+    }).catch((error) => {
+        document.getElementById('status').textContent = 'ERROR: ' + error.message;
+        console.error('FIREBASE ERROR:', error);
+    });
+}
+
+// Test connection on page load
+window.onload = function() {
+    console.log('Testing Firebase connection...');
+    db.ref('test').set('connection works').then(() => {
+        console.log('Firebase connection: SUCCESS');
+    }).catch(err => {
+        console.error('Firebase connection: FAILED', err);
+    });
+}
+</script>

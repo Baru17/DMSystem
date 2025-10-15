@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - SafeGuard Emergency</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      max-width: 400px;
+      width: 800px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      color: white;
+    }
+
+    .login-card h2 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #ff4444;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      background: rgba(255,255,255, 0.2);
+      color: white;
+      transition: background 0.3s ease;
+    }
+
+    .form-input::placeholder {
+      color: #ddd;
+    }
+
+    .form-input:focus {
+      outline: none;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      border: none;
+      border-radius: 15px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(135deg, #cc0000, #ff4444);
+    }
+  </style>
+</head>
+<body>
+  <main class="login-container">
+    <form class="login-card" id="loginForm">
+      <h2>Login</h2>
+      <div class="form-group">
+        <label for="email" class="form-label">Email address</label>
+        <input id="email" type="email" class="form-input" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input id="password" type="password" class="form-input" placeholder="Your password" required />
+      </div>
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+  </main>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // After validation (optional), redirect to index.html
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
